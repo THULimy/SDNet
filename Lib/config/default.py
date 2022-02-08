@@ -54,6 +54,7 @@ _C.DATASET.DATASET = 'cifar10'
 _C.DATASET.TRAIN_SET = 'train'
 _C.DATASET.TEST_SET = 'val'
 _C.DATASET.DATA_FORMAT = 'jpg'
+_C.DATASET.NOISE_LEVEL = 0
 
 # train
 _C.TRAIN = CN()

@@ -41,13 +41,15 @@ def ImageNet_C_dataloader_generator(root, transform, bs):
 
 class CIFAR10_C(Dataset):
 
-    def __init__(self, root, transform):
+    def __init__(self, root, transform, level):
 
         self.root = root
         self.transform = transform
         self.dataset_id = 0
-        self.targets = np.load(os.path.join(self.root, "labels.npy"))
+        targets = np.load(os.path.join(self.root, "labels.npy"))
+        self.targets = targets[int(level*10000):int((level+1)*10000)]
         self.data_list = corruption
+        self.level = level
 
         self.next_dataset()
 
@@ -56,9 +58,10 @@ class CIFAR10_C(Dataset):
         if self.dataset_id <= len(self.data_list) - 1:
             data_name = self.data_list[self.dataset_id]
             data = np.load(os.path.join(self.root, data_name))
-            self.data = data
+            self.data = data[int(self.level*10000):int((self.level+1)*10000)]
             self.data_name = data_name
             self.dataset_id += 1
+
         else:
             self.data = None
             self.data_name = None

@@ -48,7 +48,7 @@ def build_dataset(cfg):
             normalize,
         ])
 
-        valid_dataset = CIFAR10_C(root=f'{cfg.DATASET.ROOT}', transform=transform_valid)
+        valid_dataset = CIFAR10_C(root=f'{cfg.DATASET.ROOT}', transform=transform_valid, level=cfg.DATASET.NOISE_LEVEL)
 
     else:
         raise NotImplementedError
