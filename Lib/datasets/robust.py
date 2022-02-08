@@ -47,8 +47,9 @@ class CIFAR10_C(Dataset):
         self.transform = transform
         self.dataset_id = 0
         targets = np.load(os.path.join(self.root, "labels.npy"))
-        self.targets = targets[int(level*10000):int((level+1)*10000)]
+        self.targets = targets if level == -1 else targets[int(level*10000):int((level+1)*10000)]
         self.data_list = corruption
+        assert -1 <= level <= 4
         self.level = level
 
         self.next_dataset()
@@ -58,7 +59,7 @@ class CIFAR10_C(Dataset):
         if self.dataset_id <= len(self.data_list) - 1:
             data_name = self.data_list[self.dataset_id]
             data = np.load(os.path.join(self.root, data_name))
-            self.data = data[int(self.level*10000):int((self.level+1)*10000)]
+            self.data = data if self.level == -1 else data[int(self.level*10000):int((self.level+1)*10000)]
             self.data_name = data_name
             self.dataset_id += 1
 
