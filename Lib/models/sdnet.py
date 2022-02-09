@@ -34,17 +34,6 @@ class DictConv2d(nn.Module):
 
         return out
 
-        # out, rc = self.dn(x)
-
-        # delta_closs = rc[1] - self.running_c_loss
-        # while delta_closs > 0.:
-        #     print("in the loop")
-        #     print(rc[1], self.running_c_loss)
-        #     self.dn.lmbd += 0.1
-        #     out, rc = self.dn(x)
-        #     delta_closs = rc[1] - self.running_c_loss
-        # return out
-
     def robust_forward(self, x):
         out, rc = self.dn(x)
 
@@ -54,6 +43,7 @@ class DictConv2d(nn.Module):
             self.dn.lmbd += 0.1
             out, rc = self.dn(x)
             delta_closs = rc[1] - self.running_c_loss
+        self.dn.lmbd = cfg['MODEL']['LAMBDA'][0]
         return out
 
 
