@@ -26,11 +26,37 @@ class DictConv2d(nn.Module):
         # print(cfg)
         # print("==================")
         self.register_buffer('running_c_loss', torch.tensor(0, dtype=torch.float))
+        self.register_buffer('running_c_l1', torch.tensor(0, dtype=torch.float))
+
 
     def forward(self, x):
+        ### original forward
+
+        # out, rc = self.dn(x)
+        # if self.training:
+        #     self.running_c_loss = 0.99 * self.running_c_loss + (1 - 0.99) * rc[1].item()
+        #     self.running_c_l1 = 0.99 * self.running_c_l1 + (1 - 0.99) * torch.sum(torch.abs(out)).item()
+
+        # return out
+
+        ### robust forward -- still debuging
         out, rc = self.dn(x)
-        if self.training:
-            self.running_c_loss = 0.99 * self.running_c_loss + (1 - 0.99) * rc[1].item()
+        c_l1 = torch.sum(torch.abs(out))
+        print('c_l1:', c_l1.item(), 'running_c_l1:', self.running_c_l1.item())
+
+        delta_closs = c_l1 - self.running_c_l1
+        while delta_closs > 0.:
+            self.dn.lmbd += 0.01
+            self.dn.update_stepsize()
+            out, rc = self.dn(x)
+            c_l1 = torch.sum(torch.abs(out))
+            delta_closs = c_l1 - self.running_c_l1
+            import time
+            time.sleep(1)
+            print("in the loop -- ", 'lmbd:', self.dn.lmbd, 'c_l1:', c_l1.item(), 'running_c_l1:', self.running_c_l1.item(), 'diff:', delta_closs.item())
+
+        self.dn.lmbd = cfg['MODEL']['LAMBDA'][0]
+        # self.dn.update_stepsize()
 
         return out
 
@@ -153,10 +179,15 @@ class ResNet(nn.Module):
                 m.update_stepsize()
 
     def forward(self, x):
+        print('Layer 0:')
         out = self.layer0(x)
+        print('Layer 1:')
         out = self.layer1(out)
+        print('Layer 2:')
         out = self.layer2(out)
+        print('Layer 3:')
         out = self.layer3(out)
+        print('Layer 4:')
         out = self.layer4(out)
 
         out = self.avgpool(out)

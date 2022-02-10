@@ -197,7 +197,7 @@ def validate(config, val_loader, model, criterion, lr_scheduler, epoch, output_d
         end = time.time()
         for i, (input, target) in enumerate(val_loader):
             # compute output
-
+            print("Batch:", i)
             if isinstance(model, torch.nn.DataParallel):
                 model.module.update_stepsize()
             else:

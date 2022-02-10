@@ -84,7 +84,7 @@ def main():
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().cuda()
 
-    print(config)
+    # print(config)
 
     if config.DATASET.DATASET in ["imagenet_c"]:
 
